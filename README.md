@@ -10,9 +10,10 @@ Este proyecto releva, sistematiza, analiza y publica información sobre la imple
 ## Estructura del proyecto
 ### Archivos
 La estructura de los archivos se estructura de la siguiente manera: i) tres script (global, ui y server) que contienen toda la lógica, objetos y procesos para la visualización; ii) dos archvios .xlsx que contienen los datos para visualizar.
-pp_argentina/
-├── global.R
-├── ui.R
-├── server.R
-├── BBDD_Provincias_con_PP.xlsx
-└── BBDD_Municipios_con_PP.xlsx
+```text
+📂 pp_argentina
+├── 📜 global.R
+├── 📜 ui.R
+├── 📜 server.R
+├── 📊 BBDD_Provincias_con_PP.xlsx
+└── 📊 BBDD_Municipios_con_PP.xlsx
