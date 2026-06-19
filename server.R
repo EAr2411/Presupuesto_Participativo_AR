@@ -3,17 +3,17 @@
 # ════════════════════════════════════════════════════════════════
 
 server <- function(input, output, session) {
-
-# ════════════════════════════════════════════════════════════════
-# ── Reactivo central (selección de provincias)
-# ════════════════════════════════════════════════════════════════ 
+  
+  # ════════════════════════════════════════════════════════════════
+  # Reactivo central (selección de provincias)
+  # ════════════════════════════════════════════════════════════════
   municipios_filtrados <- reactive({
     if (input$provincia_sel == "Todas") return(municipios_raw)
     filter(municipios_raw, provincia == input$provincia_sel)})
   
-# ════════════════════════════════════════════════════════════════
-# ── Mapa 
-# ════════════════════════════════════════════════════════════════
+  # ════════════════════════════════════════════════════════════════
+  # Mapa
+  # ════════════════════════════════════════════════════════════════
   output$mapa <- renderLeaflet({
     leaflet(mapa_base) |>
       addTiles(options = tileOptions(opacity = 0.4)) |>
@@ -37,22 +37,20 @@ server <- function(input, output, session) {
         title    = "Municipios<br>con PP",
         position = "bottomright",
         labFormat = labelFormat(
-          transform = function(x) round(expm1(x), 0)))})
-  
-# ════════════════════════════════════════════════════════════════
-# Click en mapa 
-# ════════════════════════════════════════════════════════════════
-
-    observeEvent(input$mapa_shape_click, {
-    clicked <- input$mapa_shape_click$id
-    if (!is.null(clicked)) {
-      updateSelectInput(session, "provincia_sel", selected = clicked)
-    }
+          transform = function(x) round(expm1(x), 0)))
   })
   
-# ════════════════════════════════════════════════════════════════
-# Provincia seleccionada (resaltado)
-# ════════════════════════════════════════════════════════════════
+  # ════════════════════════════════════════════════════════════════
+  # Click en mapa
+  # ════════════════════════════════════════════════════════════════
+  observeEvent(input$mapa_shape_click, {
+    clicked <- input$mapa_shape_click$id
+    if (!is.null(clicked)) {
+      updateSelectInput(session, "provincia_sel", selected = clicked)}})
+  
+  # ════════════════════════════════════════════════════════════════
+  # Provincia seleccionada (resaltado)
+  # ════════════════════════════════════════════════════════════════
   observe({
     sel   <- input$provincia_sel
     proxy <- leafletProxy("mapa") |> clearGroup("highlight")
@@ -63,14 +61,13 @@ server <- function(input, output, session) {
         addPolygons(
           data   = geom_sel,
           fill   = FALSE,
-          color  = "#4f1410",   
-          # burdeos oscuro para el borde de selección
+          color  = "#4f1410",
           weight = 3,
           group  = "highlight")}})
-
-
-# ════════════════════════════════════════════════════════════════ # Tabla
-# ════════════════════════════════════════════════════════════════
+  
+  # ════════════════════════════════════════════════════════════════
+  # Tabla
+  # ════════════════════════════════════════════════════════════════
   output$tabla <- renderDT({
     
     df <- municipios_filtrados() |>
@@ -80,26 +77,19 @@ server <- function(input, output, session) {
           txt <- TEXTO_TIPO[t]
           sprintf(
             '<span style="background:%s; color:%s; padding:2px 10px;
-             border-radius:4px; font-size:0.8rem; font-weight:500;">%s</span>',
-            bg, txt, t
-          )
-        }, tipo)
-      ) |>
+             border-radius:4px; font-size:0.8rem; font-weight:500;">%s</span>', bg, txt, t)
+        }, tipo)) |>
       select(Provincia = provincia, Municipio = municipio, Tipo)
     
-    datatable(
-      df,
-      escape   = FALSE,   # necesario para renderizar el HTML de los badges
+    datatable(df,
+      escape   = FALSE,
       rownames = FALSE,
       options  = list(
-        pageLength = 15,
-        scrollX    = TRUE,
-        language   = list(
-          search     = "Buscar:",
-          lengthMenu = "Mostrar _MENU_ filas",
-          info       = "Mostrando _START_ a _END_ de _TOTAL_ municipios",
-          paginate   = list(previous = "Anterior", `next` = "Siguiente")),
-        columnDefs = list(
+        scrollY        = "520px",
+        scrollCollapse = TRUE,
+        paging         = FALSE,
+        scrollX        = TRUE,
+        columnDefs     = list(
           list(className = "dt-left", targets = "_all"))))})}
 
 shinyApp(ui, server)
