@@ -91,5 +91,3 @@ server <- function(input, output, session) {
         scrollX        = TRUE,
         columnDefs     = list(
           list(className = "dt-left", targets = "_all"))))})}
-
-shinyApp(ui, server)
